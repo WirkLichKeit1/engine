@@ -1,14 +1,17 @@
 {
-  "name": "universe-engine",
+  "name": "universe",
   "version": "1.0.0",
   "scripts": {
-    "dev": "ts-node-dev --respawn src/index.ts",
+    "dev": "ts-node-dev --respawn api/src/server.ts",
     "build": "tsc"
   },
-  "dependencies": {},
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
   "devDependencies": {
     "typescript": "^5.0.0",
     "ts-node-dev": "^2.0.0",
-    "@types/node": "^20.0.0"
+    "@types/node": "^20.0.0",
+    "@types/ws": "^8.5.0"
   }
 }

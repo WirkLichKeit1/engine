@@ -5,8 +5,8 @@ import { Energy } from "../components/Energy"
 import { Food } from "../components/Food"
 import { WORLD } from "../World"
 
-const SPEED = 60
-const VISION_RADIUS = 200
+const SPEED = 120
+const VISION_RADIUS = 600
 
 export function decisionSystem(em: EntityManager, delta: number): void {
     const creatures = em.getEntitiesWith("Position", "Velocity", "Energy")
@@ -16,13 +16,15 @@ export function decisionSystem(em: EntityManager, delta: number): void {
         const vel = em.getComponent<Velocity>(id, "Velocity")!
         const energy = em.getComponent<Energy>(id, "Energy")!
 
+        bounceOffWalls(vel, pos)
+
         if (energy.value <= 0) {
             vel.dx = 0
             vel.dy = 0
             return
         }
 
-        if (energy.value < 50) {
+        if (energy.value < 150) {
             const nearestFood = findNearestFood(em, pos)
             if (nearestFood) {
                 moveTowards(vel, pos, nearestFood, SPEED)
@@ -30,15 +32,11 @@ export function decisionSystem(em: EntityManager, delta: number): void {
             }
         }
 
-        wander(vel, pos, delta, SPEED)
-        bounceOffWalls(vel, pos)
+        wander(vel, delta, SPEED)
     })
 }
 
-function findNearestFood(
-    em: EntityManager,
-    pos: Position
-): Position | null {
+function findNearestFood(em: EntityManager, pos: Position): Position | null {
     const foodEntities = em.getEntitiesWith("Food", "Position")
     let nearest: Position | null = null
     let nearestDist = VISION_RADIUS
@@ -61,12 +59,7 @@ function findNearestFood(
     return nearest
 }
 
-function moveTowards(
-    vel: Velocity,
-    pos: Position,
-    target: Position,
-    speed: number
-): void {
+function moveTowards(vel: Velocity, pos: Position, target: Position, speed: number): void {
     const dx = target.x - pos.x
     const dy = target.y - pos.y
     const dist = Math.sqrt(dx * dx + dy * dy)
@@ -75,12 +68,7 @@ function moveTowards(
     vel.dy = (dy / dist) * speed
 }
 
-function wander(
-    vel: Velocity,
-    pos: Position,
-    delta: number,
-    speed: number
-): void {
+function wander(vel: Velocity, delta: number, speed: number): void {
     if (Math.random() < delta * 0.8) {
         const angle = Math.random() * Math.PI * 2
         vel.dx = Math.cos(angle) * speed
@@ -89,6 +77,8 @@ function wander(
 }
 
 function bounceOffWalls(vel: Velocity, pos: Position): void {
-    if (pos.x <= 0 || pos.x >= WORLD.width) vel.dx *= -1
-    if (pos.y <= 0 || pos.y >= WORLD.height) vel.dy *= -1
+    if (pos.x <= 0) { pos.x = 0; vel.dx = Math.abs(vel.dx) }
+    if (pos.x >= WORLD.width) { pos.x = WORLD.width; vel.dx = -Math.abs(vel.dx) }
+    if (pos.y <= 0) { pos.y = 0; vel.dy = Math.abs(vel.dy) }
+    if (pos.y >= WORLD.height) { pos.y = WORLD.height; vel.dy = -Math.abs(vel.dy) }
 }

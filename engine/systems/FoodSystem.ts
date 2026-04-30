@@ -4,9 +4,9 @@ import { Energy } from "../components/Energy"
 import { Food } from "../components/Food"
 import { randomPosition } from "../World"
 
-const FOOD_DETECTION_RADIUS = 20
-const MAX_FOOD = 80
-const SPAWN_INTERVAL = 3
+const FOOD_DETECTION_RADIUS = 40
+const MAX_FOOD = 150
+const SPAWN_INTERVAL = 0.5
 let timeSinceLastSpawn = 0
 
 export function foodSystem(em: EntityManager, delta: number): void {
@@ -36,16 +36,14 @@ export function foodSystem(em: EntityManager, delta: number): void {
 
             if (distance <= FOOD_DETECTION_RADIUS) {
                 food.consumed = true
-                energy.value = Math.min(100, energy.value + food.value)
+                energy.value = Math.min(250, energy.value + food.value)
             }
         })
     })
 
     foodEntities.forEach(foodId => {
         const food = em.getComponent<Food>(foodId, "Food")!
-        if (food.consumed) {
-            em.destroyEntity(foodId)
-        }
+        if (food.consumed) em.destroyEntity(foodId)
     })
 }
 
@@ -53,5 +51,5 @@ function spawnFood(em: EntityManager): void {
     const pos = randomPosition()
     const foodId = em.createEntity()
     em.addComponent(foodId, "Position", { x: pos.x, y: pos.y })
-    em.addComponent<Food>(foodId, "Food", { value: 30, consumed: false })
+    em.addComponent<Food>(foodId, "Food", { value: 40, consumed: false })
 }
