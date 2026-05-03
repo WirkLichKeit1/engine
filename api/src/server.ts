@@ -14,12 +14,12 @@ const em = new EntityManager()
 const loop = new GameLoop(30)
 const wss = new WebSocketServer({ port: 8080 })
 
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 60; i++) {
     const pos = randomPosition()
     const id = em.createEntity()
     em.addComponent(id, "Position", { x: pos.x, y: pos.y })
     em.addComponent(id, "Velocity", { dx: 0, dy: 0 })
-    em.addComponent(id, "Energy", { value: 250 })
+    em.addComponent(id, "Energy", { value: 560 })
     em.addComponent(id, "DNA", randomDNA())
 }
 
