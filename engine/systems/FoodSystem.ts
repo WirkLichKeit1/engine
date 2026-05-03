@@ -4,11 +4,11 @@ import { Energy } from "../components/Energy"
 import { Food } from "../components/Food"
 import { WORLD } from "../World"
 
-const FOOD_DETECTION_RADIUS = 40
+const FOOD_DETECTION_RADIUS = 120
 const MAX_FOOD = 800
 const SPAWN_INTERVAL = 0.3
 const FERTILE_REGION_COUNT = 12
-const FERTILE_RADIUS = 2000
+const FERTILE_RADIUS = 4000
 const FERTILE_SPAWN_CHANCE = 0.8
 
 let timeSinceLastSpawn = 0
@@ -77,7 +77,7 @@ function spawnNearFertileRegion(): { x: number; y: number } {
 
     return {
         x: Math.max(0, Math.min(WORLD.width, region.x + Math.cos(angle) * dist)),
-        y: Math.max(0, Math.min(WORLD.height, region.y + Math.cos(angle) * dist))
+        y: Math.max(0, Math.min(WORLD.height, region.y + Math.sin(angle) * dist))
     }
 }
 

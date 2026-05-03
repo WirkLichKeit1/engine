@@ -6,8 +6,8 @@ import { Food } from "../components/Food"
 import { DNA } from "../components/DNA"
 import { WORLD } from "../World"
 
-const DEFAULT_SPEED = 120
-const DEFAULT_VISION = 600
+const DEFAULT_SPEED = 200
+const DEFAULT_VISION = 2400
 
 export function decisionSystem(em: EntityManager, delta: number): void {
     const creatures = em.getEntitiesWith("Position", "Velocity", "Energy")

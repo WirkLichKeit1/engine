@@ -6,8 +6,8 @@ export interface DNA {
 
 export function randomDNA(): DNA {
     return {
-        speed: 80 + Math.random() * 80,
-        visionRadius: 300 + Math.random() * 400,
+        speed: 150 + Math.random() * 150,
+        visionRadius: 1500 + Math.random() * 2000,
         reproductionThreshold: 150 + Math.random() * 60
     }
 }
