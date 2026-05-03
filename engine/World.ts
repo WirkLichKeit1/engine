@@ -1,6 +1,6 @@
 export const WORLD = {
-    width: 3200,
-    height: 2400,
+    width: 25600,
+    height: 19200,
 } as const
 
 export function clampToWorld(x: number, y: number): { x: number, y: number } {

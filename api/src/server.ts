@@ -14,7 +14,7 @@ const em = new EntityManager()
 const loop = new GameLoop(30)
 const wss = new WebSocketServer({ port: 8080 })
 
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 60; i++) {
     const pos = randomPosition()
     const id = em.createEntity()
     em.addComponent(id, "Position", { x: pos.x, y: pos.y })

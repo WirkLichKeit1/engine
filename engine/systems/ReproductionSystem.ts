@@ -6,7 +6,7 @@ import { DNA, mixDNA } from "../components/DNA"
 
 const REPRODUCTION_RADIUS = 30
 const REPRODUCTION_COST = 80
-const MAX_POPULATION = 100
+const MAX_POPULATION = 300
 
 export function reproductionSystem(em: EntityManager): void {
     const creatures = em.getEntitiesWith("Position", "Energy", "DNA")
