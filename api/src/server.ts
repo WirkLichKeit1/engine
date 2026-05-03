@@ -3,6 +3,7 @@ import { EntityManager } from "../../engine/ecs/EntityManager"
 import { GameLoop } from "../../engine/ecs/GameLoop"
 import { movementSystem } from "../../engine/systems/MovementSystem"
 import { hungerSystem } from "../../engine/systems/HungerSystem"
+import { deathSystem } from "../../engine/systems/DeathSystem"
 import { foodSystem } from "../../engine/systems/FoodSystem"
 import { decisionSystem } from "../../engine/systems/DecisionSystem"
 import { reproductionSystem } from "../../engine/systems/ReproductionSystem"
@@ -28,6 +29,7 @@ loop.start((delta) => {
     decisionSystem(em, delta)
     movementSystem(em, delta)
     hungerSystem(em, delta)
+    deathSystem(em, delta)
     foodSystem(em, delta)
     reproductionSystem(em)
 
