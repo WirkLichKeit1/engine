@@ -3,10 +3,11 @@ import { Position } from "../components/Position"
 import { Velocity } from "../components/Velocity"
 import { Energy } from "../components/Energy"
 import { Food } from "../components/Food"
+import { DNA } from "../components/DNA"
 import { WORLD } from "../World"
 
-const SPEED = 120
-const VISION_RADIUS = 600
+const DEFAULT_SPEED = 120
+const DEFAULT_VISION = 600
 
 export function decisionSystem(em: EntityManager, delta: number): void {
     const creatures = em.getEntitiesWith("Position", "Velocity", "Energy")
@@ -15,6 +16,11 @@ export function decisionSystem(em: EntityManager, delta: number): void {
         const pos = em.getComponent<Position>(id, "Position")!
         const vel = em.getComponent<Velocity>(id, "Velocity")!
         const energy = em.getComponent<Energy>(id, "Energy")!
+        const dna = em.getComponent<DNA>(id, "DNA")
+
+        const speed = dna?.speed ?? DEFAULT_SPEED
+        const visionRadius = dna?.visionRadius ?? DEFAULT_VISION
+        const reproductionThreshold = dna?.reproductionThreshold ?? 150
 
         bounceOffWalls(vel, pos)
 
@@ -24,22 +30,26 @@ export function decisionSystem(em: EntityManager, delta: number): void {
             return
         }
 
-        if (energy.value < 150) {
-            const nearestFood = findNearestFood(em, pos)
+        if (energy.value < reproductionThreshold * 0.6) {
+            const nearestFood = findNearestFood(em, pos, visionRadius)
             if (nearestFood) {
-                moveTowards(vel, pos, nearestFood, SPEED)
+                moveTowards(vel, pos, nearestFood, speed)
                 return
             }
         }
 
-        wander(vel, delta, SPEED)
+        wander(vel, delta, speed)
     })
 }
 
-function findNearestFood(em: EntityManager, pos: Position): Position | null {
+function findNearestFood(
+    em: EntityManager,
+    pos: Position,
+    visionRadius: number
+): Position | null {
     const foodEntities = em.getEntitiesWith("Food", "Position")
     let nearest: Position | null = null
-    let nearestDist = VISION_RADIUS
+    let nearestDist = visionRadius
 
     foodEntities.forEach(foodId => {
         const food = em.getComponent<Food>(foodId, "Food")!
@@ -59,7 +69,12 @@ function findNearestFood(em: EntityManager, pos: Position): Position | null {
     return nearest
 }
 
-function moveTowards(vel: Velocity, pos: Position, target: Position, speed: number): void {
+function moveTowards(
+    vel: Velocity,
+    pos: Position,
+    target: Position,
+    speed: number
+): void {
     const dx = target.x - pos.x
     const dy = target.y - pos.y
     const dist = Math.sqrt(dx * dx + dy * dy)
