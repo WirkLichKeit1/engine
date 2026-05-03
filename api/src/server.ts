@@ -39,12 +39,16 @@ loop.start((delta) => {
     const food = em.getEntitiesWith("Food", "Position")
 
     const payload = JSON.stringify({
-        entities: creatures.map(id => ({
-            id,
-            x: em.getComponent<{ x: number }>(id, "Position")!.x,
-            y: em.getComponent<{ y: number }>(id, "Position")!.y,
-            energy: em.getComponent<{ value: number }>(id, "Energy")!.value,
-        })),
+        entities: creatures.map(id => {
+            const dna = em.getComponent<{ speed: number; visionRadius: number; reproductionThreshold: number }>(id, "DNA")
+            return {
+                id,
+                x: em.getComponent<{ x: number }>(id, "Position")!.x,
+                y: em.getComponent<{ y: number }>(id, "Position")!.y,
+                energy: em.getComponent<{ value: number }>(id, "Energy")!.value,
+                dna: dna ?? null,
+            }
+        }),
         food: food.map(id => ({
             id,
             x: em.getComponent<{ x: number }>(id, "Position")!.x,
