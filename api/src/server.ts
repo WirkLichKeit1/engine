@@ -5,7 +5,9 @@ import { movementSystem } from "../../engine/systems/MovementSystem"
 import { hungerSystem } from "../../engine/systems/HungerSystem"
 import { foodSystem } from "../../engine/systems/FoodSystem"
 import { decisionSystem } from "../../engine/systems/DecisionSystem"
+import { reproductionSystem } from "../../engine/systems/ReproductionSystem"
 import { randomPosition } from "../../engine/World"
+import { randomDNA } from "../../engine/components/DNA"
 
 const em = new EntityManager()
 const loop = new GameLoop(30)
@@ -17,6 +19,7 @@ for (let i = 0; i < 10; i++) {
     em.addComponent(id, "Position", { x: pos.x, y: pos.y })
     em.addComponent(id, "Velocity", { dx: 0, dy: 0 })
     em.addComponent(id, "Energy", { value: 250 })
+    em.addComponent(id, "DNA", randomDNA())
 }
 
 console.log("Servidor rodando na porta 8080")
@@ -26,6 +29,7 @@ loop.start((delta) => {
     movementSystem(em, delta)
     hungerSystem(em, delta)
     foodSystem(em, delta)
+    reproductionSystem(em)
 
     if (wss.clients.size === 0) return
 

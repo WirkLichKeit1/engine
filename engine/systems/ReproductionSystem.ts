@@ -1,7 +1,7 @@
 import { EntityManager } from "../ecs/EntityManager"
 import { Position } from "../components/Position"
 import { Energy } from "../components/Energy"
-import { DNA, mixDNA, randomDNA } from "../components/DNA"
+import { DNA, mixDNA } from "../components/DNA"
 
 
 const REPRODUCTION_RADIUS = 30
