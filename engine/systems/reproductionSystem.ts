@@ -1,0 +1,64 @@
+import { EntityManager } from "../ecs/EntityManager"
+import { Position } from "../components/Position"
+import { Energy } from "../components/Energy"
+import { DNA, mixDNA, randomDNA } from "../components/DNA"
+
+
+const REPRODUCTION_RADIUS = 30
+const REPRODUCTION_COST = 80
+const MAX_POPULATION = 100
+
+export function reproductionSystem(em: EntityManager): void {
+    const creatures = em.getEntitiesWith("Position", "Energy", "DNA")
+
+    if (creatures.length >= MAX_POPULATION) return
+
+    const alreadyReproduced = new Set<number>()
+
+    for (let i = 0; i < creatures.length; i++) {
+        const idA = creatures[i]
+        if (alreadyReproduced.has(idA)) continue
+
+        const energyA = em.getComponent<Energy>(idA, "Energy")!
+        const dnaA = em.getComponent<DNA>(idA, "DNA")!
+
+        if (energyA.value < dnaA.reproductionThreshold) continue
+
+        for (let j = i + 1; j < creatures.length; j++) {
+            const idB = creatures[j]
+            if (alreadyReproduced.has(idB)) continue
+
+            const energyB = em.getComponent<Energy>(idB, "Energy")!
+            const dnaB = em.getComponent<DNA>(idB, "DNA")!
+
+            if (energyB.value < dnaB.reproductionThreshold) continue
+
+            const posA = em.getComponent<Position>(idA, "Position")!
+            const posB = em.getComponent<Position>(idB, "Position")!
+
+            const dx = posA.x - posB.x
+            const dy = posA.y - posB.y
+            const dist = Math.sqrt(dx * dx + dy * dy)
+
+            if (dist <= REPRODUCTION_RADIUS) {
+                energyA.value -= REPRODUCTION_COST
+                energyB.value -= REPRODUCTION_COST
+
+                const childDNA = mixDNA(dnaA, dnaB)
+                spawnChild(em, posA, childDNA)
+
+                alreadyReproduced.add(idA)
+                alreadyReproduced.add(idB)
+                break
+            }
+        }
+    }
+}
+
+function spawnChild(em: EntityManager, pos: Position, dna: DNA): void {
+    const id = em.createEntity()
+    em.addComponent(id, "Position", { x: pos.x + (Math.random() - 0.5) * 20, y: pos.y - (Math.random() - 0.5) * 20 })
+    em.addComponent(id, "Velocity", { dx: 0, dy: 0 })
+    em.addComponent(id, "Energy", { value: 100 })
+    em.addComponent(id, "DNA", dna)
+}
