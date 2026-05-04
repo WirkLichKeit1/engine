@@ -4,6 +4,7 @@ import { Velocity } from "../components/Velocity"
 import { Energy } from "../components/Energy"
 import { Food } from "../components/Food"
 import { DNA } from "../components/DNA"
+import { Memory } from "../components/Memory"
 import { WORLD } from "../World"
 
 const DEFAULT_SPEED = 200
@@ -17,6 +18,7 @@ export function decisionSystem(em: EntityManager, delta: number): void {
         const vel = em.getComponent<Velocity>(id, "Velocity")!
         const energy = em.getComponent<Energy>(id, "Energy")!
         const dna = em.getComponent<DNA>(id, "DNA")
+        const memory = em.getComponent<Memory>(id, "Memory")
 
         const speed = dna?.speed ?? DEFAULT_SPEED
         const visionRadius = dna?.visionRadius ?? DEFAULT_VISION
@@ -31,10 +33,38 @@ export function decisionSystem(em: EntityManager, delta: number): void {
         }
 
         if (energy.value < reproductionThreshold * 0.6) {
+            // 1. tenta achar comida visível
             const nearestFood = findNearestFood(em, pos, visionRadius)
             if (nearestFood) {
+                // atualiza memória
+                if (memory) {
+                    memory.lastFoodX = nearestFood.x
+                    memory.lastFoodY = nearestFood.y
+                    memory.hasMemory = true
+                } else {
+                    em.addComponent<Memory>(id, "Memory", {
+                        lastFoodX: nearestFood.x,
+                        lastFoodY: nearestFood.y,
+                        hasMemory: true,
+                    })
+                }
                 moveTowards(vel, pos, nearestFood, speed)
                 return
+            }
+
+            // 2. sem comida visível — vai pra última posição lembrada
+            if (memory?.hasMemory) {
+                const dx = memory.lastFoodX - pos.x
+                const dy = memory.lastFoodY - pos.y
+                const dist = Math.sqrt(dx * dx + dy * dy)
+
+                if (dist > 100) {
+                    moveTowards(vel, pos, { x: memory.lastFoodX, y: memory.lastFoodY }, speed * 0.8)
+                    return
+                } else {
+                    // chegou na posição lembrada e não tem comida — esquece
+                    memory.hasMemory = false
+                }
             }
         }
 
