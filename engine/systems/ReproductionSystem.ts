@@ -4,8 +4,8 @@ import { Energy } from "../components/Energy"
 import { DNA, mixDNA } from "../components/DNA"
 
 
-const REPRODUCTION_RADIUS = 30
-const REPRODUCTION_COST = 80
+const REPRODUCTION_RADIUS = 60
+const REPRODUCTION_COST = 50
 const MAX_POPULATION = 300
 
 export function reproductionSystem(em: EntityManager): void {

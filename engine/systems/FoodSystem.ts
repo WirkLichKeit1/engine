@@ -5,8 +5,8 @@ import { Food } from "../components/Food"
 import { WORLD } from "../World"
 
 const FOOD_DETECTION_RADIUS = 120
-const MAX_FOOD = 800
-const SPAWN_INTERVAL = 0.3
+const MAX_FOOD = 2000
+const SPAWN_INTERVAL = 0.2
 const FERTILE_REGION_COUNT = 12
 const FERTILE_RADIUS = 4000
 const FERTILE_SPAWN_CHANCE = 0.8
