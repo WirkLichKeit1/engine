@@ -14,7 +14,7 @@ const FERTILE_SPAWN_CHANCE = 0.8
 let timeSinceLastSpawn = 0
 
 // regiões férteis geradas uma vez no início
-const fertileRagions: { x: number; y: number }[] = Array.from(
+export const fertileRegions: { x: number; y: number }[] = Array.from(
     { length: FERTILE_REGION_COUNT },
     () => ({
         x: Math.random() * WORLD.width,
@@ -71,7 +71,7 @@ function spawnFood(em: EntityManager): void {
 }
 
 function spawnNearFertileRegion(): { x: number; y: number } {
-    const region = fertileRagions[Math.floor(Math.random() * fertileRagions.length)]
+    const region = fertileRegions[Math.floor(Math.random() * fertileRegions.length)]
     const angle = Math.random() * Math.PI * 2
     const dist = Math.random() * FERTILE_RADIUS
 

@@ -4,7 +4,7 @@ import { GameLoop } from "../../engine/ecs/GameLoop"
 import { movementSystem } from "../../engine/systems/MovementSystem"
 import { hungerSystem } from "../../engine/systems/HungerSystem"
 import { deathSystem } from "../../engine/systems/DeathSystem"
-import { foodSystem } from "../../engine/systems/FoodSystem"
+import { foodSystem, fertileRegions } from "../../engine/systems/FoodSystem"
 import { decisionSystem } from "../../engine/systems/DecisionSystem"
 import { reproductionSystem } from "../../engine/systems/ReproductionSystem"
 import { randomPosition } from "../../engine/World"
@@ -23,6 +23,10 @@ for (let i = 0; i < 60; i++) {
     em.addComponent(id, "DNA", randomDNA())
 }
 
+wss.on("connection", (ws) => {
+    ws.send(JSON.stringify({ type: "init", fertileRegions }))
+})
+
 console.log("Servidor rodando na porta 8080")
 
 loop.start((delta) => {
@@ -39,6 +43,7 @@ loop.start((delta) => {
     const food = em.getEntitiesWith("Food", "Position")
 
     const payload = JSON.stringify({
+        type: "state",
         entities: creatures.map(id => {
             const dna = em.getComponent<{ speed: number; visionRadius: number; reproductionThreshold: number }>(id, "DNA")
             return {
