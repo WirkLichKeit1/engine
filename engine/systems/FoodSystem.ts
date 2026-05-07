@@ -38,20 +38,20 @@ export function foodSystem(em: EntityManager, delta: number): void {
         const creaturePos = em.getComponent<Position>(creatureId, "Position")!
         const energy = em.getComponent<Energy>(creatureId, "Energy")!
 
-        foodEntities.forEach(foodId => {
+        for (const foodId of foodEntities) {
             const food = em.getComponent<Food>(foodId, "Food")!
-            if (food.consumed) return
+            if (food.consumed) continue
 
             const foodPos = em.getComponent<Position>(foodId, "Position")!
             const dx = creaturePos.x - foodPos.x
             const dy = creaturePos.y - foodPos.y
-            const distance = Math.sqrt(dx * dx + dy * dy)
 
-            if (distance <= FOOD_DETECTION_RADIUS) {
+            if (dx * dx + dy * dy <= FOOD_DETECTION_RADIUS * FOOD_DETECTION_RADIUS) {
                 food.consumed = true
                 energy.value = Math.min(250, energy.value + food.value)
+                break
             }
-        })
+        }
     })
 
     foodEntities.forEach(foodId => {

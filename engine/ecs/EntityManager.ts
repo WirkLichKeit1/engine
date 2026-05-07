@@ -1,10 +1,13 @@
 export class EntityManager {
     private nextId: number = 0
+    private recycledIds: number[] = []
     private entities: Set<number> = new Set()
     private components: Map<string, Map<number, unknown>> = new Map()
 
     createEntity(): number {
-        const id = this.nextId++
+        const id = this.recycledIds.length > 0
+            ? this.recycledIds.pop()!
+            : this.nextId++
         this.entities.add(id)
         return id
     }
@@ -12,6 +15,7 @@ export class EntityManager {
     destroyEntity(id: number): void {
         this.entities.delete(id)
         this.components.forEach(store => store.delete(id))
+        this.recycledIds.push(id)
     }
 
     addComponent<T>(id: number, name: string, data: T): void {
