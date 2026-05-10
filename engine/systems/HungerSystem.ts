@@ -9,7 +9,7 @@ export function hungerSystem(em: EntityManager, delta: number): void {
     entities.forEach(id => {
         const energy = em.getComponent<Energy>(id, "Energy")!
 
-        energy.value -= delta * 3
+        energy.value -= delta * 1.4
 
         if (energy.value < 0) energy.value = 0
     })

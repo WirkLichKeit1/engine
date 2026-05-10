@@ -4,15 +4,21 @@ import { Energy } from "../components/Energy"
 import { DNA, mixDNA } from "../components/DNA"
 
 const REPRODUCTION_RADIUS = 60
-const REPRODUCTION_COST = 50
+const REPRODUCTION_COST = 30
 const MAX_POPULATION = 300
 const MIN_POPULATION_THRESHOLD = 15
 const ASEXUAL_ENERGY_THRESHOLD = 180
 
-export function reproductionSystem(em: EntityManager): void {
-    const creatures = em.getEntitiesWith("Position", "Energy", "DNA")
+export interface ReproductionEvent {
+    x: number
+    y: number
+}
 
-    if (creatures.length >= MAX_POPULATION) return
+export function reproductionSystem(em: EntityManager): ReproductionEvent[] {
+    const creatures = em.getEntitiesWith("Position", "Energy", "DNA")
+    const events: ReproductionEvent[] = []
+
+    if (creatures.length >= MAX_POPULATION) return events
 
     const alreadyReproduced = new Set<number>()
     const lowPopulation = creatures.length < MIN_POPULATION_THRESHOLD
@@ -50,6 +56,7 @@ export function reproductionSystem(em: EntityManager): void {
                 energyB.value -= REPRODUCTION_COST
 
                 spawnChild(em, posA, mixDNA(dnaA, dnaB))
+                events.push({ x: posA.x, y: posA.y })
 
                 alreadyReproduced.add(idA)
                 alreadyReproduced.add(idB)
@@ -65,9 +72,12 @@ export function reproductionSystem(em: EntityManager): void {
 
             const mutatedDNA = mixDNA(dnaA, dnaA) // mistura consigo mesmo — só mutação
             spawnChild(em, posA, mutatedDNA)
+            events.push({ x: posA.x, y: posA.y })
             alreadyReproduced.add(idA)
         }
     }
+
+    return events
 }
 
 function spawnChild(em: EntityManager, pos: Position, dna: DNA): void {

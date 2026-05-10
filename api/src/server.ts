@@ -11,6 +11,7 @@ import { randomPosition } from "../../engine/World"
 import { randomDNA } from "../../engine/components/DNA"
 
 const em = new EntityManager()
+const reproductionEvents = reproductionSystem(em)
 const loop = new GameLoop(30)
 const wss = new WebSocketServer({ port: 8080 })
 
@@ -59,6 +60,7 @@ loop.start((delta) => {
             x: em.getComponent<{ x: number }>(id, "Position")!.x,
             y: em.getComponent<{ y: number }>(id, "Position")!.y,
         })),
+        reproductionEvents,
     })
 
     wss.clients.forEach(client => {

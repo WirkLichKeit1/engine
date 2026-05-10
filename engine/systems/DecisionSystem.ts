@@ -68,8 +68,48 @@ export function decisionSystem(em: EntityManager, delta: number): void {
             }
         }
 
+        // energia suficiente — busca parceiro
+        if (energy.value >= reproductionThreshold) {
+            const partner = findNearestPartner(em, id, pos, visionRadius, reproductionThreshold)
+            if (partner) {
+                moveTowards(vel, pos, partner, speed * 0.9)
+                return
+            }
+        }
+
         wander(vel, delta, speed)
     })
+}
+
+function findNearestPartner(
+    em: EntityManager,
+    selfId: number,
+    pos: Position,
+    visionRadius: number,
+    reproductionThreshold: number,
+): Position | null {
+    const creatures = em.getEntitiesWith("Position", "Energy", "DNA")
+    let nearest: Position | null = null
+    let nearestDist = visionRadius
+
+    creatures.forEach(otherId => {
+        if (otherId === selfId) return
+
+        const otherEnergy = em.getComponent<Energy>(otherId, "Energy")!
+        if (otherEnergy.value < reproductionThreshold) return
+
+        const otherPos = em.getComponent<Position>(otherId, "Position")!
+        const dx = otherPos.x - pos.x
+        const dy = otherPos.y - pos.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+
+        if (dist < nearestDist) {
+            nearestDist = dist
+            nearest = otherPos
+        }
+    })
+
+    return nearest
 }
 
 function findNearestFood(
