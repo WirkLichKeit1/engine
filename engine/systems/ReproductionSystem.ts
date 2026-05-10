@@ -4,7 +4,7 @@ import { Energy } from "../components/Energy"
 import { DNA, mixDNA } from "../components/DNA"
 
 const REPRODUCTION_RADIUS = 60
-const REPRODUCTION_COST = 30
+const REPRODUCTION_COST = 70
 const MAX_POPULATION = 300
 const MIN_POPULATION_THRESHOLD = 15
 const ASEXUAL_ENERGY_THRESHOLD = 180

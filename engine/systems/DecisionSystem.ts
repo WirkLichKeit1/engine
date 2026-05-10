@@ -9,6 +9,7 @@ import { WORLD } from "../World"
 
 const DEFAULT_SPEED = 200
 const DEFAULT_VISION = 2400
+const ENERGY_MAX = 250
 
 export function decisionSystem(em: EntityManager, delta: number): void {
     const creatures = em.getEntitiesWith("Position", "Velocity", "Energy")
@@ -69,7 +70,7 @@ export function decisionSystem(em: EntityManager, delta: number): void {
         }
 
         // energia suficiente — busca parceiro
-        if (energy.value >= reproductionThreshold) {
+        if (energy.value >= ENERGY_MAX * 0.85) {
             const partner = findNearestPartner(em, id, pos, visionRadius, reproductionThreshold)
             if (partner) {
                 moveTowards(vel, pos, partner, speed * 0.9)
