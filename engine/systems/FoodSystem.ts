@@ -6,7 +6,7 @@ import { getBiomeAt } from "../biomes/BiomeMap"
 import { WORLD } from "../World"
 
 const FOOD_DETECTION_RADIUS = 120
-const MAX_FOOD = 2000
+const MAX_FOOD = 50000
 const SPAWN_INTERVAL = 0.2
 const FERTILE_REGION_COUNT = 12
 const FERTILE_RADIUS = 4000
