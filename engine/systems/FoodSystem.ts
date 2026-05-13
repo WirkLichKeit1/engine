@@ -2,6 +2,7 @@ import { EntityManager } from "../ecs/EntityManager"
 import { Position } from "../components/Position"
 import { Energy } from "../components/Energy"
 import { Food } from "../components/Food"
+import { getBiomeAt } from "../biomes/BiomeMap"
 import { WORLD } from "../World"
 
 const FOOD_DETECTION_RADIUS = 120
@@ -64,7 +65,11 @@ function spawnFood(em: EntityManager): void {
     const pos = Math.random() < FERTILE_SPAWN_CHANCE
         ? spawnNearFertileRegion()
         : randomWorldPosition()
-    
+
+    // biomas com pouca comida tem chance de cancelar spawn
+    const biome = getBiomeAt(pos.x, pos.y)
+    if (Math.random() > biome.foodSpawnMultiplier) return
+
     const foodId = em.createEntity()
     em.addComponent(foodId, "Position", pos)
     em.addComponent<Food>(foodId, "Food", { value: 40, consumed: false })

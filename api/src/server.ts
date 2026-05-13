@@ -7,11 +7,11 @@ import { deathSystem } from "../../engine/systems/DeathSystem"
 import { foodSystem, fertileRegions } from "../../engine/systems/FoodSystem"
 import { decisionSystem } from "../../engine/systems/DecisionSystem"
 import { reproductionSystem } from "../../engine/systems/ReproductionSystem"
+import { biomeCells } from "../../engine/biomes/BiomeMap"
 import { randomPosition } from "../../engine/World"
 import { randomDNA } from "../../engine/components/DNA"
 
 const em = new EntityManager()
-const reproductionEvents = reproductionSystem(em)
 const loop = new GameLoop(30)
 const wss = new WebSocketServer({ port: 8080 })
 
@@ -25,7 +25,7 @@ for (let i = 0; i < 60; i++) {
 }
 
 wss.on("connection", (ws) => {
-    ws.send(JSON.stringify({ type: "init", fertileRegions }))
+    ws.send(JSON.stringify({ type: "init", fertileRegions, biomeCells }))
 })
 
 console.log("Servidor rodando na porta 8080")
@@ -36,7 +36,7 @@ loop.start((delta) => {
     hungerSystem(em, delta)
     deathSystem(em, delta)
     foodSystem(em, delta)
-    reproductionSystem(em)
+    const reproductionEvents = reproductionSystem(em)
 
     if (wss.clients.size === 0) return
 
