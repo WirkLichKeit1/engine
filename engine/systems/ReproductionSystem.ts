@@ -2,12 +2,16 @@ import { EntityManager } from "../ecs/EntityManager"
 import { Position } from "../components/Position"
 import { Energy } from "../components/Energy"
 import { DNA, mixDNA } from "../components/DNA"
+import { generateName } from "../utils/NameGenerator"
+import { Identity } from "../components/Identity"
 
 const REPRODUCTION_RADIUS = 60
 const REPRODUCTION_COST = 70
 const MAX_POPULATION = 10000
 const MIN_POPULATION_THRESHOLD = 15
 const ASEXUAL_ENERGY_THRESHOLD = 180
+const MIN_MAX_AGE = 120 // 2 minutos
+const MAX_MAX_AGE = 300 // 5 minutos
 
 export interface ReproductionEvent {
     x: number
@@ -89,4 +93,9 @@ function spawnChild(em: EntityManager, pos: Position, dna: DNA): void {
     em.addComponent(id, "Velocity", { dx: 0, dy: 0 })
     em.addComponent(id, "Energy", { value: 100 })
     em.addComponent(id, "DNA", dna)
+    em.addComponent<Identity>(id, "Identity", {
+        name: generateName(),
+        age: 0,
+        maxAge: MIN_MAX_AGE + Math.random() * (MAX_MAX_AGE - MIN_MAX_AGE),
+    })
 }

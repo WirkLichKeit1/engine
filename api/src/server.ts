@@ -10,6 +10,9 @@ import { reproductionSystem } from "../../engine/systems/ReproductionSystem"
 import { biomeCells } from "../../engine/biomes/BiomeMap"
 import { randomPosition } from "../../engine/World"
 import { randomDNA } from "../../engine/components/DNA"
+import { ageSystem } from "../../engine/systems/AgeSystem"
+import { Identity } from "../../engine/components/Identity"
+import { generateName } from "../../engine/utils/NameGenerator"
 
 const em = new EntityManager()
 const loop = new GameLoop(30)
@@ -22,6 +25,11 @@ for (let i = 0; i < 60; i++) {
     em.addComponent(id, "Velocity", { dx: 0, dy: 0 })
     em.addComponent(id, "Energy", { value: 560 })
     em.addComponent(id, "DNA", randomDNA())
+    em.addComponent<Identity>(id, "Identity", {
+        name: generateName(),
+        age: 0,
+        maxAge: 120 + Math.random() * 180,
+    })
 }
 
 wss.on("connection", (ws) => {
@@ -37,6 +45,7 @@ loop.start((delta) => {
     deathSystem(em, delta)
     foodSystem(em, delta)
     const reproductionEvents = reproductionSystem(em)
+    ageSystem(em, delta)
 
     if (wss.clients.size === 0) return
 
@@ -53,6 +62,7 @@ loop.start((delta) => {
                 y: em.getComponent<{ y: number }>(id, "Position")!.y,
                 energy: em.getComponent<{ value: number }>(id, "Energy")!.value,
                 dna: dna ?? null,
+                identity: em.getComponent<Identity>(id, "Identity") ?? null,
             }
         }),
         food: food.map(id => ({
